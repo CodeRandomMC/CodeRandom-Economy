@@ -12,11 +12,11 @@ import java.util.logging.Logger;
 
 public class EconomyJson implements EconomyManager {
     private static final Logger LOGGER = CodeRandomEconomy.getInstance().getLogger();
-    private final JsonFileManager jsonFileManager;
+    private final JsonFileManager accountsFile;
     private final HashMap<UUID, Double> balanceCache;
 
     EconomyJson() {
-        this.jsonFileManager = new JsonFileManager(CodeRandomEconomy.getInstance(), "DATA", "wallets");
+        this.accountsFile = new JsonFileManager(CodeRandomEconomy.getInstance(), "DATA", "wallets");
         this.balanceCache = new HashMap<>();
     }
 
@@ -41,7 +41,7 @@ public class EconomyJson implements EconomyManager {
 
     @Override
     public double loadBalance(UUID uuid) {
-        CompletableFuture<JsonElement> future = jsonFileManager.getAsync();
+        CompletableFuture<JsonElement> future = accountsFile.getAsync();
         try {
             JsonElement jsonElement = future.get();
             if (jsonElement != null && jsonElement.isJsonObject()) {
@@ -62,7 +62,7 @@ public class EconomyJson implements EconomyManager {
     @Override
     public void saveBalance(UUID uuid) {
         double balance = getBalance(uuid);
-        jsonFileManager.getAsync().thenAccept(jsonElement -> {
+        accountsFile.getAsync().thenAccept(jsonElement -> {
             JsonObject jsonObject;
             if (jsonElement != null && jsonElement.isJsonObject()) {
                 jsonObject = jsonElement.getAsJsonObject();
@@ -71,7 +71,7 @@ public class EconomyJson implements EconomyManager {
             }
 
             jsonObject.addProperty(uuid.toString(), balance);
-            jsonFileManager.setAsync(jsonObject).exceptionally(throwable -> {
+            accountsFile.setAsync(jsonObject).exceptionally(throwable -> {
                 LOGGER.log(Level.SEVERE, "Could not save balance for player: " + uuid, throwable);
                 return null;
             });
@@ -81,7 +81,7 @@ public class EconomyJson implements EconomyManager {
 
     @Override
     public void saveAllBalances() {
-        jsonFileManager.getAsync().thenAccept(jsonElement -> {
+        accountsFile.getAsync().thenAccept(jsonElement -> {
             JsonObject jsonObject;
             if (jsonElement != null && jsonElement.isJsonObject()) {
                 jsonObject = jsonElement.getAsJsonObject();
@@ -93,7 +93,7 @@ public class EconomyJson implements EconomyManager {
                 jsonObject.addProperty(uuid.toString(), getBalance(uuid));
             }
 
-            jsonFileManager.setAsync(jsonObject).exceptionally(throwable -> {
+            accountsFile.setAsync(jsonObject).exceptionally(throwable -> {
                 LOGGER.log(Level.SEVERE, "Could not save all balances!", throwable);
                 return null;
             });
@@ -104,7 +104,7 @@ public class EconomyJson implements EconomyManager {
 
     @Override
     public boolean hasAccount(UUID uuid) {
-        CompletableFuture<JsonElement> future = jsonFileManager.getAsync();
+        CompletableFuture<JsonElement> future = accountsFile.getAsync();
         try {
             JsonElement jsonElement = future.get();
             if (jsonElement != null && jsonElement.isJsonObject()) {
