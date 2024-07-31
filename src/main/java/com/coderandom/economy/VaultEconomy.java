@@ -1,5 +1,6 @@
 package com.coderandom.economy;
 
+import com.coderandom.core.CodeRandomCore;
 import com.coderandom.core.UUIDFetcher;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -11,15 +12,22 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class VaultEconomy extends AbstractEconomy {
+    private static volatile VaultEconomy instance;
     private final Plugin plugin;
     private final EconomyManager economy;
-    private final boolean isOnlineMode;
 
     public VaultEconomy(Plugin plugin) {
         this.plugin = plugin;
-        this.isOnlineMode = Bukkit.getOnlineMode();
         EconomyFactory.initialize();
         economy = EconomyFactory.getInstance();
+        instance = this;
+    }
+
+    public static VaultEconomy getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("VaultEconomy is not initialized. this shouldn't happen.");
+        }
+        return instance;
     }
 
     @Override
@@ -29,7 +37,7 @@ public class VaultEconomy extends AbstractEconomy {
 
     @Override
     public String getName() {
-        return "MineRP-Economy";
+        return "CodeRandomEconomy";
     }
 
     @Override
@@ -58,15 +66,7 @@ public class VaultEconomy extends AbstractEconomy {
     }
 
     private UUID getPlayerUUID(String playerName) {
-        if (isOnlineMode) {
-            UUID uuid = UUIDFetcher.getUUID(playerName);
-            if (uuid == null) {
-                plugin.getLogger().log(Level.SEVERE, "Could not fetch UUID for player: " + playerName);
-            }
-            return uuid;
-        } else {
-            return UUIDFetcher.getOfflineUUID(playerName);
-        }
+        return UUIDFetcher.getUUID(playerName);
     }
 
     @Override

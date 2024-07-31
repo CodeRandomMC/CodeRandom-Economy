@@ -9,3 +9,36 @@ description: A new economy system built for minecraft servers.
 softdepend:
   - Vault
   - CodeRandomCore
+permissions:
+  code_random.economy.user:
+    default: true
+    description: Access to basic economy commands
+    children:
+      code_random.economy.user.balance: true
+      code_random.economy.user.pay: true
+  code_random.economy.user.balance:
+    default: true
+    description: Permission to view balance
+  code_random.economy.user.pay:
+    default: true
+    description: Permission to pay other players
+  code_random.economy.admin:
+    default: op
+    description: Access to administrative economy commands
+    children:
+      code_random.economy.admin.balance: true
+      code_Random.economy.admin.set: true
+      code_Random.economy.admin.deposit: true
+      code_Random.economy.admin..withdraw: true
+  code_random.economy.admin.balance:
+    default: op
+    description: Access to /economy <player>
+  code_random.economy.admin.set:
+    default: op
+    description: Access to /economy set <player> <amount>
+  code_random.economy.admin.deposit:
+    default: op
+    description: Access to /economy deposit <player> <amount>
+  code_random.economy.admin.withdraw:
+    default: op
+    description: Access to /economy withdraw <player> <amount>
