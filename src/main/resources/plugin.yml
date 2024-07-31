@@ -1,0 +1,9 @@
+name: CodeRandom-Economy
+version: '1.0-SNAPSHOT'
+main: com.coderandom.cr_economy.CREconomy
+api-version: '1.21'
+prefix: MineRP
+load: STARTUP
+authors: [ D4RKJOK3R ]
+description: A new economy system built for minecraft servers.
+depend: [Vault]
