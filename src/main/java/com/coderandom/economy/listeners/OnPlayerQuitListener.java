@@ -1,13 +1,13 @@
-package com.coderandom.cr_economy.listeners;
+package com.coderandom.economy.listeners;
 
-import com.coderandom.cr_core.listener.BaseListener;
-import com.coderandom.cr_economy.CodeRandomEconomy;
-import com.coderandom.cr_economy.EconomyFactory;
+import com.coderandom.core.listener.BaseListener;
+import com.coderandom.economy.CodeRandomEconomy;
+import com.coderandom.economy.EconomyFactory;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class OnPlayerQuit extends BaseListener {
-    public OnPlayerQuit() {
+public class OnPlayerQuitListener extends BaseListener {
+    public OnPlayerQuitListener() {
         super(CodeRandomEconomy.getInstance());
     }
 

@@ -1,6 +1,7 @@
-package com.coderandom.cr_economy;
+package com.coderandom.economy;
 
-import com.coderandom.cr_core.MySQLManager;
+import com.coderandom.core.CodeRandomCore;
+import com.coderandom.core.MySQLManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,7 +16,7 @@ public class EconomyMySQL implements EconomyManager {
     private final HashMap<UUID, Double> balanceCache;
 
     public EconomyMySQL() {
-        this.mySQLManager = MySQLManager.getInstance();
+        this.mySQLManager = CodeRandomCore.getMySQLManager();
         this.balanceCache = new HashMap<>();
     }
 

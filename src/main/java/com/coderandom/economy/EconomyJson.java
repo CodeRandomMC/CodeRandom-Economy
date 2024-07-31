@@ -1,6 +1,6 @@
-package com.coderandom.cr_economy;
+package com.coderandom.economy;
 
-import com.coderandom.cr_core.storage.JsonFileManager;
+import com.coderandom.core.storage.JsonFileManager;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 

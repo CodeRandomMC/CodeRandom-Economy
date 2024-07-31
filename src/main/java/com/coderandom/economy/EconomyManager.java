@@ -1,4 +1,4 @@
-package com.coderandom.cr_economy;
+package com.coderandom.economy;
 
 import java.util.UUID;
 

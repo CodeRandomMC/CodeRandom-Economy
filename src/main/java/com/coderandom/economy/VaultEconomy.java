@@ -1,6 +1,6 @@
-package com.coderandom.cr_economy;
+package com.coderandom.economy;
 
-import com.coderandom.cr_core.UUIDFetcher;
+import com.coderandom.core.UUIDFetcher;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -18,7 +18,7 @@ public class VaultEconomy extends AbstractEconomy {
     public VaultEconomy(Plugin plugin) {
         this.plugin = plugin;
         this.isOnlineMode = Bukkit.getOnlineMode();
-        EconomyFactory.initialize(CodeRandomEconomy.getInstance());
+        EconomyFactory.initialize();
         economy = EconomyFactory.getInstance();
     }
 
