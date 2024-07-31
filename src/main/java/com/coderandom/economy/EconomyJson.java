@@ -4,20 +4,21 @@ import com.coderandom.core.storage.JsonFileManager;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import java.util.HashMap;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EconomyJson implements EconomyManager {
     private static final Logger LOGGER = CodeRandomEconomy.getInstance().getLogger();
     private final JsonFileManager accountsFile;
-    private final HashMap<UUID, Double> balanceCache;
+    private final ConcurrentHashMap<UUID, Double> balanceCache;
 
     EconomyJson() {
         this.accountsFile = new JsonFileManager(CodeRandomEconomy.getInstance(), "DATA", "wallets");
-        this.balanceCache = new HashMap<>();
+        this.balanceCache = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -89,7 +90,9 @@ public class EconomyJson implements EconomyManager {
                 jsonObject = new JsonObject();
             }
 
-            for (UUID uuid : balanceCache.keySet()) {
+            // Make a copy of the keys to avoid concurrent modification
+            Set<UUID> keys = Set.copyOf(balanceCache.keySet());
+            for (UUID uuid : keys) {
                 jsonObject.addProperty(uuid.toString(), getBalance(uuid));
             }
 

@@ -11,8 +11,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -40,6 +40,11 @@ public class PayCommand extends BaseCommand {
                     if (!economy.hasAccount(targetPlayer)) {
                         MessageUtils.formattedErrorMessage(player,"Player account not found!");
                         sendUsage(sender);
+                        return;
+                    }
+
+                    if (Objects.equals(player.getName(), targetPlayer.getName())) {
+                        MessageUtils.formattedErrorMessage(player, "You can't send money to yourself!");
                         return;
                     }
 

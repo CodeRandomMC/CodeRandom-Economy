@@ -5,19 +5,19 @@ import com.coderandom.core.MySQLManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EconomyMySQL implements EconomyManager {
     private static final Logger LOGGER = CodeRandomEconomy.getInstance().getLogger();
     private final MySQLManager mySQLManager;
-    private final HashMap<UUID, Double> balanceCache;
+    private final ConcurrentHashMap<UUID, Double> balanceCache;
 
     public EconomyMySQL() {
         this.mySQLManager = CodeRandomCore.getMySQLManager();
-        this.balanceCache = new HashMap<>();
+        this.balanceCache = new ConcurrentHashMap<>();
     }
 
     public void createTables() {
@@ -80,7 +80,8 @@ public class EconomyMySQL implements EconomyManager {
 
     @Override
     public void saveAllBalances() {
-        for (UUID uuid : balanceCache.keySet()) {
+        Set<UUID> keys = new HashSet<>(balanceCache.keySet());
+        for (UUID uuid : keys) {
             saveBalance(uuid);
         }
     }

@@ -2,12 +2,14 @@ package com.coderandom.economy;
 
 import com.coderandom.core.CodeRandomCore;
 import com.coderandom.economy.commands.BalanceCommand;
+import com.coderandom.economy.commands.EconomyCommand;
 import com.coderandom.economy.commands.PayCommand;
 import com.coderandom.economy.listeners.OnPlayerJoinListener;
 import com.coderandom.economy.listeners.OnPlayerQuitListener;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.logging.Level;
 
@@ -35,16 +37,19 @@ public final class CodeRandomEconomy extends JavaPlugin {
         getLogger().log(Level.INFO, "CodeRandomEconomy enabled successfully.");
         registerEvents();
         registerCommands();
-    }
 
-    private void registerEvents() {
-        new OnPlayerJoinListener();
-        new OnPlayerQuitListener();
-    }
-
-    private void registerCommands() {
-        new BalanceCommand();
-        new PayCommand();
+        // Schedule the task to save all balances every 5 minutes (6000 ticks)
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        EconomyFactory.getInstance().saveAllBalances();
+                    }
+                }.runTaskAsynchronously(CodeRandomEconomy.this);
+            }
+        }.runTaskTimer(this, 6000L, 6000L); // 6000 ticks = 5 minutes
     }
 
     @Override
@@ -53,8 +58,24 @@ public final class CodeRandomEconomy extends JavaPlugin {
         getLogger().log(Level.INFO, "CodeRandomEconomy disabled successfully.");
         if (getServer().getPluginManager().getPlugin("CodeRandomCore") == null) return;
         if (CodeRandomCore.getInstance().dependencyCheck("Vault")) {
-            EconomyFactory.getInstance().saveAllBalances();
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    EconomyFactory.getInstance().saveAllBalances();
+                }
+            }.runTaskAsynchronously(this);
         }
+    }
+
+    private void registerEvents() {
+        new OnPlayerJoinListener();
+        new OnPlayerQuitListener();
+    }
+
+    private void registerCommands() {
+        new EconomyCommand();
+        new BalanceCommand();
+        new PayCommand();
     }
 
     private void setupEconomy() {
