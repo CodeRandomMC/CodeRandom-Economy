@@ -42,7 +42,7 @@ Refer to the `config.yml` file for detailed configuration options. You can choos
 
 ### Admin
 - `/economy` - Shows the commands available to work with the economy.
-- `/economy <player>` - Shows the player's balance.
+- `/economy balance <player>` - Shows the player's balance.
 - `/economy set <player> <amount>` - Set a player's balance.
 - `/economy deposit <player> <amount>` - Deposit money into a player's account.
 - `/economy withdraw <player> <amount>` - Withdraw money from a player's account.

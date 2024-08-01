@@ -1,13 +1,13 @@
 # Configuration file for CodeRandomEconomy
 
 # MySQL usage flag:
-# - Set to true to use MySQL from CodeRandomCore.
+# - Set to true to use MySQL from CodeRandomCore (BungeeCord requires MySQL).
 # - Set to false to use local file storage.
-MySQL: false
+MySQL: true
 
 # Autosave interval in seconds:
 # - Specifies how often the balance cache should save to file or MySQL.
-# - Set to 0 or disable for real-time saving, necessary for BungeeCord setups (BungeeCord requires MySQL).
+# - Set to 0 or disable for real-time saving, (necessary for BungeeCord/Waterfall setups and requires MySQL).
 autosave_interval: 5 # minutes
 
 # Default balance for new players:

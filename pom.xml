@@ -6,7 +6,7 @@
 
     <groupId>com.coderandom</groupId>
     <artifactId>CodeRandomEconomy</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-1.21</version>
     <packaging>jar</packaging>
 
     <name>CodeRandomEconomy</name>

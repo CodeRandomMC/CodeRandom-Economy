@@ -1,15 +1,17 @@
 package com.coderandom.economy;
 
 import com.coderandom.core.UUIDFetcher;
+import com.coderandom.core.command.CommandUtil;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 public final class VaultEconomy extends AbstractEconomy {
     private static volatile VaultEconomy instance;
@@ -54,7 +56,7 @@ public final class VaultEconomy extends AbstractEconomy {
                     }
                 }.runTaskAsynchronously(plugin);
             }
-        }.runTaskTimer(plugin, autosave_interval, autosave_interval); // 6000 ticks = 5 minutes
+        }.runTaskTimer(plugin, autosave_interval, autosave_interval);
         plugin.getLogger().info("Set to autosave every " + autosave_interval + " minutes.");
     }
 
@@ -84,6 +86,18 @@ public final class VaultEconomy extends AbstractEconomy {
     public int fractionalDigits() {
         return 2;
     }
+
+    public double checkPositive(String amountString) {
+        Double amount = CommandUtil.parseDouble(amountString);
+        if (amount != null) {
+            double formattedAmount = BigDecimal.valueOf(amount).setScale(2, RoundingMode.HALF_UP).doubleValue();
+            if (formattedAmount > 0) {
+                return formattedAmount;
+            }
+        }
+        return -1;
+    }
+
 
     @Override
     public String format(double amount) {
