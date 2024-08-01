@@ -20,6 +20,7 @@ public final class CodeRandomEconomy extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         instance = this;
+        saveDefaultConfig();
 
         // Check if CodeRandom-Core installed
         if (getServer().getPluginManager().getPlugin("CodeRandomCore") == null){

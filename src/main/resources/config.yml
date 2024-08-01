@@ -1,0 +1,6 @@
+# CodeRandomEconomy configuration
+MySQL: false                    # true if you want to use MySQL from CodeRandomCore / false if you want to use file storage
+default_balance: 100            # The balance a new player starts with.
+currency_symbol: $              # Currency symbol shown when a player see's balances
+currency_name_singular: Coin    # Name of currency when only 1
+currency_name_plural: Coins     # Name of currency when have multiple

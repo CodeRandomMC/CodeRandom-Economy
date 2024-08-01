@@ -3,6 +3,7 @@ package com.coderandom.economy;
 import com.coderandom.core.UUIDFetcher;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -12,12 +13,19 @@ public final class VaultEconomy extends AbstractEconomy {
     private static volatile VaultEconomy instance;
     private final Plugin plugin;
     private final EconomyManager economy;
+    private final String currency_symbol;
+    private final String currency_name_singular;
+    private final String currency_name_plural;
 
     public VaultEconomy(Plugin plugin) {
+        FileConfiguration config = plugin.getConfig();
         this.plugin = plugin;
         EconomyFactory.initialize();
         economy = EconomyFactory.getInstance();
         instance = this;
+        this.currency_symbol = config.getString("currency_symbol", "$");
+        this.currency_name_singular = config.getString("currency_name_singular", "Coin");
+        this.currency_name_plural = config.getString("currency_name_plural", "Coins");
     }
 
     public static VaultEconomy getInstance() {
@@ -49,17 +57,17 @@ public final class VaultEconomy extends AbstractEconomy {
 
     @Override
     public String format(double amount) {
-        return String.format("$%.2f", amount);
+        return String.format(currency_symbol + "%.2f", amount);
     }
 
     @Override
     public String currencyNamePlural() {
-        return "Dollars";
+        return currency_name_plural;
     }
 
     @Override
     public String currencyNameSingular() {
-        return "Dollar";
+        return currency_name_singular;
     }
 
     private UUID getPlayerUUID(String playerName) {

@@ -5,10 +5,14 @@ import com.coderandom.core.CodeRandomCore;
 public final class EconomyFactory {
     private static volatile EconomyManager instance;
 
-    public static void initialize() {
+    static void initialize() {
         if (instance == null) {
             synchronized (EconomyManager.class) {
                 if (instance == null) {
+                    if (CodeRandomEconomy.getInstance().getConfig().getBoolean("MySQL", false)) {
+                        CodeRandomEconomy.getInstance().getLogger().info("MySQL disabled in CodeRandomEconomy using JSON!");
+                        instance = new EconomyJson();
+                    }
                     if (CodeRandomCore.usingMySQL()) {
                         EconomyMySQL economyMySQL = new EconomyMySQL();
                         economyMySQL.createTables();
