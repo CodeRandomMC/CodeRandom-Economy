@@ -1,5 +1,8 @@
-# CodeRandom-Economy
+<p align="center">
+  <img src="logo.png" alt="CodeRandom Economy Logo" width="500" height="500">
+</p>
 
+# CodeRandom-Economy
 A simple, lightweight economy system for Minecraft using Vault, with support for MySQL or JSON storage. This plugin requires CodeRandom-Core and Vault.
 
 ## Features
@@ -10,7 +13,7 @@ A simple, lightweight economy system for Minecraft using Vault, with support for
 
 ## Requirements
 
-- [CodeRandom-Core](https://github.com/your-link-to-coderandom-core)
+- [CodeRandom-Core](https://github.com/D4RKJ0K3R17/CodeRandom-Core/releases)
 - [Vault](https://dev.bukkit.org/projects/vault)
 
 ## Installation
