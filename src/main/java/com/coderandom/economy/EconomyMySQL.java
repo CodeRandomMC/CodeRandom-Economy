@@ -3,9 +3,12 @@ package com.coderandom.economy;
 import com.coderandom.core.CodeRandomCore;
 import com.coderandom.core.MySQLManager;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,18 +31,15 @@ public final class EconomyMySQL implements EconomyManager {
                 "uuid VARCHAR(36) NOT NULL," +
                 "balance DOUBLE NOT NULL," +
                 "PRIMARY KEY (uuid))";
-
         mySQLManager.createTables(createTableQuery);
     }
 
     @Override
     public double getBalance(UUID uuid) {
-        if (!usingAutoSave) {
+        if (!usingAutoSave || !balanceCache.containsKey(uuid)) {
             return loadBalance(uuid);
-        } else if (balanceCache.containsKey(uuid)) {
-            return balanceCache.get(uuid);
         }
-        return loadBalance(uuid);
+        return balanceCache.get(uuid);
     }
 
     @Override
@@ -60,27 +60,36 @@ public final class EconomyMySQL implements EconomyManager {
     @Override
     public double loadBalance(UUID uuid) {
         if (usingAutoSave && balanceCache.containsKey(uuid)) {
-            return getBalance(uuid);
+            return balanceCache.get(uuid);
         }
 
-        String query = "SELECT balance FROM player_balances WHERE uuid = ?";
-        try (ResultSet rs = mySQLManager.executeQuery(query, uuid.toString())) {
-            if (rs.next()) {
-                double balance = rs.getDouble("balance");
-                if (usingAutoSave) {
-                    balanceCache.put(uuid, balance);
+        return CompletableFuture.supplyAsync(() -> {
+            String query = "SELECT balance FROM player_balances WHERE uuid = ?";
+            try (Connection connection = mySQLManager.getConnection();
+                 PreparedStatement ps = connection.prepareStatement(query)) {
+                ps.setString(1, uuid.toString());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        double balance = rs.getDouble("balance");
+                        if (usingAutoSave) {
+                            balanceCache.put(uuid, balance);
+                        }
+                        return balance;
+                    } else {
+                        if (usingAutoSave) {
+                            balanceCache.put(uuid, defaultBalance);
+                        }
+                        return defaultBalance;
+                    }
                 }
-                return balance;
-            } else {
-                if (usingAutoSave) {
-                    balanceCache.put(uuid, defaultBalance);
-                }
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Could not load balance for player: " + uuid, e);
                 return defaultBalance;
             }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not load balance for player: " + uuid, e);
-            return 0.0;
-        }
+        }).exceptionally(throwable -> {
+            LOGGER.log(Level.SEVERE, "Exception while loading balance for player: " + uuid, throwable);
+            return defaultBalance;
+        }).join();
     }
 
     @Override
@@ -90,35 +99,60 @@ public final class EconomyMySQL implements EconomyManager {
     }
 
     public void saveBalance(UUID uuid, double balance) {
-        String query = "REPLACE INTO player_balances (uuid, balance) VALUES (?, ?)";
-        try {
-            mySQLManager.executeUpdate(query, uuid.toString(), balance);
-            if (usingAutoSave) {
-                balanceCache.remove(uuid);
+        CompletableFuture.runAsync(() -> {
+            String query = "REPLACE INTO player_balances (uuid, balance) VALUES (?, ?)";
+            try {
+                mySQLManager.executeUpdate(query, uuid.toString(), balance);
+                if (usingAutoSave) {
+                    balanceCache.remove(uuid);
+                }
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Could not save balance for player: " + uuid, e);
             }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not save balance for player: " + uuid, e);
-        }
+        }).exceptionally(throwable -> {
+            LOGGER.log(Level.SEVERE, "Exception while saving balance for player: " + uuid, throwable);
+            return null;
+        });
     }
 
     @Override
     public void saveAllBalances() {
         if (!usingAutoSave || balanceCache.isEmpty()) return;
-        Set<UUID> keys = new HashSet<>(balanceCache.keySet());
-        for (UUID uuid : keys) {
-            saveBalance(uuid);
-        }
-        LOGGER.log(Level.INFO, "Saved all cached balances.");
+
+        CompletableFuture.runAsync(() -> {
+            String query = "REPLACE INTO player_balances (uuid, balance) VALUES (?, ?)";
+            try {
+                mySQLManager.executeBatchUpdate(query, balanceCache.entrySet().stream()
+                        .map(entry -> new Object[]{entry.getKey().toString(), entry.getValue()})
+                        .toArray(Object[][]::new));
+                balanceCache.clear();
+                LOGGER.log(Level.INFO, "Saved all cached balances.");
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Could not save all balances!", e);
+            }
+        }).exceptionally(throwable -> {
+            LOGGER.log(Level.SEVERE, "Exception while saving all balances!", throwable);
+            return null;
+        });
     }
 
     @Override
     public boolean hasAccount(UUID uuid) {
-        String query = "SELECT 1 FROM player_balances WHERE uuid = ?";
-        try (ResultSet rs = mySQLManager.executeQuery(query, uuid.toString())) {
-            return rs.next();
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not check if account exists for player: " + uuid, e);
+        return CompletableFuture.supplyAsync(() -> {
+            String query = "SELECT 1 FROM player_balances WHERE uuid = ?";
+            try (Connection connection = mySQLManager.getConnection();
+                 PreparedStatement ps = connection.prepareStatement(query)) {
+                ps.setString(1, uuid.toString());
+                try (ResultSet rs = ps.executeQuery()) {
+                    return rs.next();
+                }
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Could not check if account exists for player: " + uuid, e);
+                return false;
+            }
+        }).exceptionally(throwable -> {
+            LOGGER.log(Level.SEVERE, "Exception while checking account for player: " + uuid, throwable);
             return false;
-        }
+        }).join();
     }
 }

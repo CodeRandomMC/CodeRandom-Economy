@@ -26,12 +26,10 @@ public final class EconomyJson implements EconomyManager {
 
     @Override
     public double getBalance(UUID uuid) {
-        if (!usingAutoSave) {
+        if (!usingAutoSave || !balanceCache.containsKey(uuid)) {
             return loadBalance(uuid);
-        } else if (balanceCache.containsKey(uuid)) {
-            return balanceCache.get(uuid);
         }
-        return loadBalance(uuid);
+        return balanceCache.get(uuid);
     }
 
     @Override
@@ -45,8 +43,8 @@ public final class EconomyJson implements EconomyManager {
 
     @Override
     public void updateBalance(UUID uuid, double amount) {
-        double newBalance = getBalance(uuid) + amount;
-        setBalance(uuid, newBalance);
+        double currentBalance = getBalance(uuid);
+        setBalance(uuid, currentBalance + amount);
     }
 
     @Override
@@ -55,9 +53,7 @@ public final class EconomyJson implements EconomyManager {
             return balanceCache.get(uuid);
         }
 
-        CompletableFuture<JsonElement> future = accountsFile.getAsync();
-        try {
-            JsonElement jsonElement = future.get();
+        CompletableFuture<Double> future = accountsFile.getAsync().thenApply(jsonElement -> {
             if (jsonElement != null && jsonElement.isJsonObject()) {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 if (jsonObject.has(uuid.toString())) {
@@ -68,13 +64,21 @@ public final class EconomyJson implements EconomyManager {
                     return balance;
                 }
             }
+            if (usingAutoSave) {
+                balanceCache.put(uuid, defaultBalance); // Default balance if not found
+            }
+            return defaultBalance;
+        }).exceptionally(throwable -> {
+            LOGGER.log(Level.SEVERE, "Could not load balance for player: " + uuid, throwable);
+            return defaultBalance;
+        });
+
+        try {
+            return future.get();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Could not load balance for player: " + uuid, e);
+            LOGGER.log(Level.SEVERE, "Exception while loading balance for player: " + uuid, e);
+            return defaultBalance;
         }
-        if (usingAutoSave) {
-            balanceCache.put(uuid, defaultBalance); // Default balance if not found
-        }
-        return defaultBalance;
     }
 
     @Override
@@ -106,6 +110,7 @@ public final class EconomyJson implements EconomyManager {
     @Override
     public void saveAllBalances() {
         if (!usingAutoSave || balanceCache.isEmpty()) return;
+
         accountsFile.getAsync().thenAccept(jsonElement -> {
             JsonObject jsonObject;
             if (jsonElement != null && jsonElement.isJsonObject()) {
@@ -117,7 +122,7 @@ public final class EconomyJson implements EconomyManager {
             // Make a copy of the keys to avoid concurrent modification
             Set<UUID> keys = Set.copyOf(balanceCache.keySet());
             for (UUID uuid : keys) {
-                jsonObject.addProperty(uuid.toString(), getBalance(uuid));
+                jsonObject.addProperty(uuid.toString(), balanceCache.get(uuid));
             }
 
             accountsFile.setAsync(jsonObject).exceptionally(throwable -> {
@@ -132,16 +137,22 @@ public final class EconomyJson implements EconomyManager {
 
     @Override
     public boolean hasAccount(UUID uuid) {
-        CompletableFuture<JsonElement> future = accountsFile.getAsync();
-        try {
-            JsonElement jsonElement = future.get();
+        CompletableFuture<Boolean> future = accountsFile.getAsync().thenApply(jsonElement -> {
             if (jsonElement != null && jsonElement.isJsonObject()) {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 return jsonObject.has(uuid.toString());
             }
+            return false;
+        }).exceptionally(throwable -> {
+            LOGGER.log(Level.SEVERE, "Could not check if account exists for player: " + uuid, throwable);
+            return false;
+        });
+
+        try {
+            return future.get();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Could not check if account exists for player: " + uuid, e);
+            LOGGER.log(Level.SEVERE, "Exception while checking account for player: " + uuid, e);
+            return false;
         }
-        return false;
     }
 }

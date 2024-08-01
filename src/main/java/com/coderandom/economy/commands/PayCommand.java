@@ -39,7 +39,7 @@ public final class PayCommand extends BaseCommand {
             if (args.length == 2) {
                 UUID targetUUID = UUIDFetcher.getUUID(args[0]);
                 if (targetUUID == null) {
-                    MessageUtils.formattedErrorMessage(sender, "Player " + args[0] + "does not exist!");
+                    MessageUtils.formattedErrorMessage(sender, "Player " + args[0] + " does not exist!");
                     return;
                 }
 
