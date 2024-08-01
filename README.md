@@ -16,16 +16,16 @@ A simple, lightweight economy system for Minecraft using Vault, with support for
 ## Installation
 
 1. Download the latest release from the [Releases](https://github.com/D4RKJ0K3R17/CodeRandom-Economy/releases) page.
-2. Place the JAR file in your Minecraft server's `plugins` directory.
+2. Place the JAR file in your Minecraft server's `plugins` directory, And the required Vault and CodeRandom-Core.
 3. Restart the server to generate the default configuration files.
 4. Configure the plugin as needed in the generated config files.
 
 ## Installation (BungeeCord/Waterfall) WARNING: EXPERIMENTAL
 
 1. Download the latest release from the [Releases](https://github.com/D4RKJ0K3R17/CodeRandom-Economy/releases) page.
-2. Place the JAR file in your BungeeCord/Waterfall server's `plugins` directory.
+2. Place the JAR file in your BungeeCord/Waterfall server's `plugins` directory, And the required Vault and CodeRandom-Core.
 3. Restart the server to generate the default configuration files.
-4. In the CodeRandom-Core config, set up MySQL and ensure it is enabled in the CodeRandom-Economy config. Also, set `autosave_interval` to 0.
+4. In the CodeRandom-Core config, set up MySQL and ensure it is enabled and each server connected to the same database in the CodeRandom-Economy config. Also, set `autosave_interval` to 0.
 
 ## Configuration
 
