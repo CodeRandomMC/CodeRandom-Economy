@@ -9,11 +9,13 @@ public final class EconomyFactory {
         if (instance == null) {
             synchronized (EconomyManager.class) {
                 if (instance == null) {
-                    if (CodeRandomEconomy.getInstance().getConfig().getBoolean("MySQL", false)) {
+                    if (!CodeRandomEconomy.getInstance().getConfig().getBoolean("MySQL", false)) {
                         CodeRandomEconomy.getInstance().getLogger().info("MySQL disabled in CodeRandomEconomy using JSON!");
                         instance = new EconomyJson();
+                        return;
                     }
                     if (CodeRandomCore.usingMySQL()) {
+                        CodeRandomEconomy.getInstance().getLogger().info("MySQL enabled and connected!");
                         EconomyMySQL economyMySQL = new EconomyMySQL();
                         economyMySQL.createTables();
                         instance = economyMySQL;

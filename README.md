@@ -20,27 +20,32 @@ A simple, lightweight economy system for Minecraft using Vault, with support for
 3. Restart the server to generate the default configuration files.
 4. Configure the plugin as needed in the generated config files.
 
+## Installation (BungeeCord/Waterfall) WARNING: EXPERIMENTAL
+
+1. Download the latest release from the [Releases](https://github.com/D4RKJ0K3R17/CodeRandom-Economy/releases) page.
+2. Place the JAR file in your BungeeCord/Waterfall server's `plugins` directory.
+3. Restart the server to generate the default configuration files.
+4. In the CodeRandom-Core config, set up MySQL and ensure it is enabled in the CodeRandom-Economy config. Also, set `autosave_interval` to 0.
+
 ## Configuration
 
-Refer to the `config.yml` file for detailed configuration options. 
-You can choose between MySQL and JSON for data storage. depending on your settings in CodeRandomCore configs.
+Refer to the `config.yml` file for detailed configuration options. You can choose between MySQL and JSON for data storage, depending on your settings in the CodeRandom-Core configs.
 
 ## Commands
 
-#### Default
+### Default
 - `/balance` - Check your current balance.
 - `/pay <player> <amount>` - Pay another player.
 
-#### Admin
-- `/economy` - Shows the commands available to work with economy.
-- `/economy <player>` - Shows the players balance.
-- `/economy set <player> <anount>` - Set a players balance.
-- `/economy deposit <player> <amount>` - Deposit money into a players account.
-- `/economy withdraw <player> <amount>` - Withdraw money from a players account.
-
+### Admin
+- `/economy` - Shows the commands available to work with the economy.
+- `/economy <player>` - Shows the player's balance.
+- `/economy set <player> <amount>` - Set a player's balance.
+- `/economy deposit <player> <amount>` - Deposit money into a player's account.
+- `/economy withdraw <player> <amount>` - Withdraw money from a player's account.
 
 ## Permissions
-###### Child commands are granted if parent command is given
+Child commands are granted if the parent command is given.
 
 - `code_random.economy.admin` - Access to administrative economy commands.
   - `code_random.economy.admin.balance` - Access to `/economy <player>`

@@ -5,9 +5,11 @@ import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public final class VaultEconomy extends AbstractEconomy {
     private static volatile VaultEconomy instance;
@@ -16,16 +18,44 @@ public final class VaultEconomy extends AbstractEconomy {
     private final String currency_symbol;
     private final String currency_name_singular;
     private final String currency_name_plural;
+    private static int autosave_interval;
 
-    public VaultEconomy(Plugin plugin) {
+    public VaultEconomy() {
+        this.plugin = CodeRandomEconomy.getInstance();
         FileConfiguration config = plugin.getConfig();
-        this.plugin = plugin;
-        EconomyFactory.initialize();
-        economy = EconomyFactory.getInstance();
         instance = this;
         this.currency_symbol = config.getString("currency_symbol", "$");
         this.currency_name_singular = config.getString("currency_name_singular", "Coin");
         this.currency_name_plural = config.getString("currency_name_plural", "Coins");
+        autosave_interval = (config.getInt("autosave_interval", 5) * 60) * 20;
+
+        EconomyFactory.initialize();
+        economy = EconomyFactory.getInstance();
+
+        startAutosave();
+    }
+
+    public static boolean usingAutoSave() {
+        return autosave_interval != 0;
+    }
+
+    private void startAutosave() {
+        if (!usingAutoSave()) {
+            return;
+        }
+        // Schedule the task to save all balances
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        EconomyFactory.getInstance().saveAllBalances();
+                    }
+                }.runTaskAsynchronously(plugin);
+            }
+        }.runTaskTimer(plugin, autosave_interval, autosave_interval); // 6000 ticks = 5 minutes
+        plugin.getLogger().info("Set to autosave every " + autosave_interval + " minutes.");
     }
 
     public static VaultEconomy getInstance() {

@@ -38,20 +38,6 @@ public final class CodeRandomEconomy extends JavaPlugin {
         getLogger().log(Level.INFO, "CodeRandomEconomy enabled successfully.");
         registerEvents();
         registerCommands();
-
-        // Schedule the task to save all balances every 5 minutes (6000 ticks)
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        EconomyFactory.getInstance().saveAllBalances();
-                        getLogger().log(Level.INFO, "Saved all balances.");
-                    }
-                }.runTaskAsynchronously(CodeRandomEconomy.this);
-            }
-        }.runTaskTimer(this, 6000L, 6000L); // 6000 ticks = 5 minutes
     }
 
     @Override
@@ -84,7 +70,7 @@ public final class CodeRandomEconomy extends JavaPlugin {
         }
 
         // Register your economy as the primary provider
-        getServer().getServicesManager().register(Economy.class, new VaultEconomy(this), this, ServicePriority.Highest);
+        getServer().getServicesManager().register(Economy.class, new VaultEconomy(), this, ServicePriority.Highest);
         getLogger().info(this.getName() + " has been successfully registered as the primary economy provider.");
 
     }

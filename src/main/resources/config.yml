@@ -1,6 +1,23 @@
-# CodeRandomEconomy configuration
-MySQL: false                    # true if you want to use MySQL from CodeRandomCore / false if you want to use file storage
-default_balance: 100            # The balance a new player starts with.
-currency_symbol: $              # Currency symbol shown when a player see's balances
-currency_name_singular: Coin    # Name of currency when only 1
-currency_name_plural: Coins     # Name of currency when have multiple
+# Configuration file for CodeRandomEconomy
+
+# MySQL usage flag:
+# - Set to true to use MySQL from CodeRandomCore.
+# - Set to false to use local file storage.
+MySQL: false
+
+# Autosave interval in seconds:
+# - Specifies how often the balance cache should save to file or MySQL.
+# - Set to 0 or disable for real-time saving, necessary for BungeeCord setups (BungeeCord requires MySQL).
+autosave_interval: 5 # minutes
+
+# Default balance for new players:
+# - This is the starting balance that new players will have.
+default_balance: 100.00
+
+# Currency display settings:
+# - currency_symbol: Symbol displayed alongside balances.
+# - currency_name_singular: Name of the currency in singular form (e.g., "Coin").
+# - currency_name_plural: Name of the currency in plural form (e.g., "Coins").
+currency_symbol: $
+currency_name_singular: Coin
+currency_name_plural: Coins

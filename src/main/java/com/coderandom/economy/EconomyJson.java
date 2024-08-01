@@ -16,6 +16,7 @@ public final class EconomyJson implements EconomyManager {
     private final JsonFileManager accountsFile;
     private final ConcurrentHashMap<UUID, Double> balanceCache;
     private final double defaultBalance;
+    private static final boolean usingAutoSave = VaultEconomy.usingAutoSave();
 
     EconomyJson() {
         this.accountsFile = new JsonFileManager(CodeRandomEconomy.getInstance(), "DATA", "wallets");
@@ -23,10 +24,11 @@ public final class EconomyJson implements EconomyManager {
         this.defaultBalance = CodeRandomEconomy.getInstance().getConfig().getDouble("default_balance", 0.0);
     }
 
-
     @Override
     public double getBalance(UUID uuid) {
-        if (balanceCache.containsKey(uuid)) {
+        if (!usingAutoSave) {
+            return loadBalance(uuid);
+        } else if (balanceCache.containsKey(uuid)) {
             return balanceCache.get(uuid);
         }
         return loadBalance(uuid);
@@ -34,7 +36,11 @@ public final class EconomyJson implements EconomyManager {
 
     @Override
     public void setBalance(UUID uuid, double balance) {
-        balanceCache.put(uuid, balance);
+        if (!usingAutoSave) {
+            saveBalance(uuid, balance);
+        } else {
+            balanceCache.put(uuid, balance);
+        }
     }
 
     @Override
@@ -45,7 +51,7 @@ public final class EconomyJson implements EconomyManager {
 
     @Override
     public double loadBalance(UUID uuid) {
-        if (balanceCache.containsKey(uuid)) {
+        if (usingAutoSave && balanceCache.containsKey(uuid)) {
             return balanceCache.get(uuid);
         }
 
@@ -56,20 +62,28 @@ public final class EconomyJson implements EconomyManager {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 if (jsonObject.has(uuid.toString())) {
                     double balance = jsonObject.get(uuid.toString()).getAsDouble();
-                    balanceCache.put(uuid, balance);
+                    if (usingAutoSave) {
+                        balanceCache.put(uuid, balance);
+                    }
                     return balance;
                 }
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Could not load balance for player: " + uuid, e);
         }
-        balanceCache.put(uuid, defaultBalance); // Default balance if not found
+        if (usingAutoSave) {
+            balanceCache.put(uuid, defaultBalance); // Default balance if not found
+        }
         return defaultBalance;
     }
 
     @Override
     public void saveBalance(UUID uuid) {
         double balance = getBalance(uuid);
+        saveBalance(uuid, balance);
+    }
+
+    public void saveBalance(UUID uuid, double balance) {
         accountsFile.getAsync().thenAccept(jsonElement -> {
             JsonObject jsonObject;
             if (jsonElement != null && jsonElement.isJsonObject()) {
@@ -83,12 +97,15 @@ public final class EconomyJson implements EconomyManager {
                 LOGGER.log(Level.SEVERE, "Could not save balance for player: " + uuid, throwable);
                 return null;
             });
-            balanceCache.remove(uuid);
+            if (usingAutoSave) {
+                balanceCache.remove(uuid);
+            }
         });
     }
 
     @Override
     public void saveAllBalances() {
+        if (!usingAutoSave || balanceCache.isEmpty()) return;
         accountsFile.getAsync().thenAccept(jsonElement -> {
             JsonObject jsonObject;
             if (jsonElement != null && jsonElement.isJsonObject()) {
@@ -109,6 +126,7 @@ public final class EconomyJson implements EconomyManager {
             });
 
             balanceCache.clear();
+            LOGGER.log(Level.INFO, "Saved all cached balances.");
         });
     }
 
