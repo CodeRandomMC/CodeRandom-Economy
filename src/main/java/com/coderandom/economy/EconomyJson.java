@@ -15,11 +15,14 @@ public final class EconomyJson implements EconomyManager {
     private static final Logger LOGGER = CodeRandomEconomy.getInstance().getLogger();
     private final JsonFileManager accountsFile;
     private final ConcurrentHashMap<UUID, Double> balanceCache;
+    private final double defaultBalance;
 
     EconomyJson() {
         this.accountsFile = new JsonFileManager(CodeRandomEconomy.getInstance(), "DATA", "wallets");
         this.balanceCache = new ConcurrentHashMap<>();
+        this.defaultBalance = CodeRandomEconomy.getInstance().getConfig().getDouble("default_balance", 0.0);
     }
+
 
     @Override
     public double getBalance(UUID uuid) {
@@ -42,6 +45,10 @@ public final class EconomyJson implements EconomyManager {
 
     @Override
     public double loadBalance(UUID uuid) {
+        if (balanceCache.containsKey(uuid)) {
+            return balanceCache.get(uuid);
+        }
+
         CompletableFuture<JsonElement> future = accountsFile.getAsync();
         try {
             JsonElement jsonElement = future.get();
@@ -56,8 +63,8 @@ public final class EconomyJson implements EconomyManager {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Could not load balance for player: " + uuid, e);
         }
-        balanceCache.put(uuid, 0.0); // Default balance if not found
-        return 0.0;
+        balanceCache.put(uuid, defaultBalance); // Default balance if not found
+        return defaultBalance;
     }
 
     @Override

@@ -14,10 +14,12 @@ public final class EconomyMySQL implements EconomyManager {
     private static final Logger LOGGER = CodeRandomEconomy.getInstance().getLogger();
     private final MySQLManager mySQLManager;
     private final ConcurrentHashMap<UUID, Double> balanceCache;
+    private final double defaultBalance;
 
     public EconomyMySQL() {
         this.mySQLManager = CodeRandomCore.getMySQLManager();
         this.balanceCache = new ConcurrentHashMap<>();
+        this.defaultBalance = CodeRandomEconomy.getInstance().getConfig().getDouble("default_balance", 0.0);
     }
 
     public void createTables() {
@@ -50,6 +52,9 @@ public final class EconomyMySQL implements EconomyManager {
 
     @Override
     public double loadBalance(UUID uuid) {
+        if (balanceCache.containsKey(uuid)) {
+            return getBalance(uuid);
+        }
         String query = "SELECT balance FROM player_balances WHERE uuid = ?";
         try (ResultSet rs = mySQLManager.executeQuery(query, uuid.toString())) {
             if (rs.next()) {
@@ -57,8 +62,8 @@ public final class EconomyMySQL implements EconomyManager {
                 balanceCache.put(uuid, balance);
                 return balance;
             } else {
-                balanceCache.put(uuid, 0.0); // Default balance if not found
-                return 0.0;
+                balanceCache.put(uuid, defaultBalance);
+                return defaultBalance;
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Could not load balance for player: " + uuid, e);

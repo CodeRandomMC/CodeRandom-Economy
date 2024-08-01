@@ -13,6 +13,6 @@ public final class OnPlayerJoinListener extends BaseListener {
 
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {
-        EconomyFactory.getInstance().loadBalance(event.getPlayer().getUniqueId());
+        EconomyFactory.getInstance().getBalance(event.getPlayer().getUniqueId());
     }
 }
