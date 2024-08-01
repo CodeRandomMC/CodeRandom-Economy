@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class EconomyMySQL implements EconomyManager {
+public final class EconomyMySQL implements EconomyManager {
     private static final Logger LOGGER = CodeRandomEconomy.getInstance().getLogger();
     private final MySQLManager mySQLManager;
     private final ConcurrentHashMap<UUID, Double> balanceCache;

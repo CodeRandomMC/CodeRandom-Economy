@@ -46,6 +46,7 @@ public final class CodeRandomEconomy extends JavaPlugin {
                     @Override
                     public void run() {
                         EconomyFactory.getInstance().saveAllBalances();
+                        getLogger().log(Level.INFO, "Saved all balances.");
                     }
                 }.runTaskAsynchronously(CodeRandomEconomy.this);
             }
@@ -58,12 +59,7 @@ public final class CodeRandomEconomy extends JavaPlugin {
         getLogger().log(Level.INFO, "CodeRandomEconomy disabled successfully.");
         if (getServer().getPluginManager().getPlugin("CodeRandomCore") == null) return;
         if (CodeRandomCore.getInstance().dependencyCheck("Vault")) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    EconomyFactory.getInstance().saveAllBalances();
-                }
-            }.runTaskAsynchronously(this);
+            EconomyFactory.getInstance().saveAllBalances();
         }
     }
 

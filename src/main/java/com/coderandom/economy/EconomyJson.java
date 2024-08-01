@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class EconomyJson implements EconomyManager {
+public final class EconomyJson implements EconomyManager {
     private static final Logger LOGGER = CodeRandomEconomy.getInstance().getLogger();
     private final JsonFileManager accountsFile;
     private final ConcurrentHashMap<UUID, Double> balanceCache;

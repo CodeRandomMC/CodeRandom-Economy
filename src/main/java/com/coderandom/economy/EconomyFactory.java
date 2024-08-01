@@ -1,10 +1,8 @@
 package com.coderandom.economy;
 
 import com.coderandom.core.CodeRandomCore;
-import com.coderandom.core.MySQLManager;
-import org.bukkit.plugin.Plugin;
 
-public class EconomyFactory {
+public final class EconomyFactory {
     private static volatile EconomyManager instance;
 
     public static void initialize() {

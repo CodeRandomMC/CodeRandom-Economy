@@ -6,7 +6,7 @@ import com.coderandom.economy.EconomyFactory;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class OnPlayerJoinListener extends BaseListener {
+public final class OnPlayerJoinListener extends BaseListener {
     public OnPlayerJoinListener() {
         super(CodeRandomEconomy.getInstance());
     }

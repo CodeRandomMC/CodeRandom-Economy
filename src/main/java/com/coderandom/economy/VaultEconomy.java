@@ -1,17 +1,14 @@
 package com.coderandom.economy;
 
-import com.coderandom.core.CodeRandomCore;
 import com.coderandom.core.UUIDFetcher;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 
-public class VaultEconomy extends AbstractEconomy {
+public final class VaultEconomy extends AbstractEconomy {
     private static volatile VaultEconomy instance;
     private final Plugin plugin;
     private final EconomyManager economy;

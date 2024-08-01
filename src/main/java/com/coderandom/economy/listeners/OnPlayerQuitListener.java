@@ -6,7 +6,7 @@ import com.coderandom.economy.EconomyFactory;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class OnPlayerQuitListener extends BaseListener {
+public final class OnPlayerQuitListener extends BaseListener {
     public OnPlayerQuitListener() {
         super(CodeRandomEconomy.getInstance());
     }

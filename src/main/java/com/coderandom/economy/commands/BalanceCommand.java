@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class BalanceCommand extends BaseCommand {
+public final class BalanceCommand extends BaseCommand {
     public BalanceCommand() {
         super(
                 CodeRandomEconomy.getInstance(),

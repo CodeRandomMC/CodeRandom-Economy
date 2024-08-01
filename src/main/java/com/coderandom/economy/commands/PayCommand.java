@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class PayCommand extends BaseCommand {
+public final class PayCommand extends BaseCommand {
     private static final Economy economy = VaultEconomy.getInstance();
     private static final Logger LOGGER = CodeRandomEconomy.getInstance().getLogger();
 
@@ -27,7 +27,7 @@ public class PayCommand extends BaseCommand {
                 "pay",
                 null,
                 "code_random.economy.user.pay",
-                "Allows a user to see there balance"
+                "Allows a user to send a player money."
         );
     }
 
