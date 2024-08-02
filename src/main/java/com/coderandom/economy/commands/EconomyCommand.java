@@ -10,14 +10,11 @@ import com.coderandom.economy.VaultEconomy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.coderandom.core.command.CommandUtil.*;
 import static com.coderandom.economy.EconomyMessages.amountErrorMessage;

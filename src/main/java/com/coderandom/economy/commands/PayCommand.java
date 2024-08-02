@@ -5,6 +5,8 @@ import com.coderandom.core.command.BaseCommand;
 import com.coderandom.core.command.CommandUtil;
 import com.coderandom.core.utils.MessageUtils;
 import com.coderandom.economy.CodeRandomEconomy;
+import com.coderandom.economy.EconomyFactory;
+import com.coderandom.economy.EconomyMessages;
 import com.coderandom.economy.VaultEconomy;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -20,7 +22,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public final class PayCommand extends BaseCommand {
-    private static final Economy economy = VaultEconomy.getInstance();
+    private static final VaultEconomy economy = VaultEconomy.getInstance();
     private static final Logger LOGGER = CodeRandomEconomy.getInstance().getLogger();
 
     public PayCommand() {
@@ -56,16 +58,10 @@ public final class PayCommand extends BaseCommand {
                         return;
                     }
 
-                    try {
-                        amount = Double.parseDouble(args[1]);
-                    } catch (NumberFormatException e) {
-                        MessageUtils.formattedErrorMessage(sender, "Amount must be a number.");
-                        sendUsage(sender);
-                        return;
-                    }
+                    amount = economy.checkPositive(args[1]);
 
-                    if (amount < 0) {
-                        MessageUtils.formattedErrorMessage(sender, "Amount has to be more that 0.");
+                    if (amount <= 0) {
+                        EconomyMessages.amountErrorMessage(sender);
                         sendUsage(sender);
                         return;
                     }

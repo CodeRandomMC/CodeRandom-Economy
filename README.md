@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.png" alt="CodeRandom Economy Logo" width="500" height="500">
+  <img src="https://github.com/D4RKJ0K3R17/CodeRandom-Economy/blob/master/logo.png?raw=true" alt="CodeRandom Economy Logo" width="256" height="256">
 </p>
 
 # CodeRandom-Economy

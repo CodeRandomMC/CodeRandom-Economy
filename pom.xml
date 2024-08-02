@@ -6,7 +6,7 @@
 
     <groupId>com.coderandom</groupId>
     <artifactId>CodeRandomEconomy</artifactId>
-    <version>1.0-1.21</version>
+    <version>1.0.0-1.21</version>
     <packaging>jar</packaging>
 
     <name>CodeRandomEconomy</name>
@@ -47,7 +47,21 @@
                 <version>3.1.0</version>
                 <executions>
                     <execution>
+                        <id>copy-on-install</id>
                         <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy file="${project.build.directory}/${project.build.finalName}.jar"
+                                      todir="D:\data\Repositories\Spigot\Spigot Server\plugins"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-on-package</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>

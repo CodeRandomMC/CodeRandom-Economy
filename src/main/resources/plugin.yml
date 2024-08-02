@@ -1,5 +1,5 @@
 name: CodeRandomEconomy
-version: '1.0-1.21'
+version: '1.0.0-1.21'
 main: com.coderandom.economy.CodeRandomEconomy
 api-version: '1.21'
 prefix: CodeRandomEconomy
